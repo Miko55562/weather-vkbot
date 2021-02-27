@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import time
 import requests
 import vk_api
