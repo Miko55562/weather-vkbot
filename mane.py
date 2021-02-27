@@ -13,7 +13,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 def mane():
     print('Started')
     vk_session = vk_api.VkApi(
-        token='c2a3d2e18a677d6eaadb42076e50bafb5ea3f2cea42c77347c7b946c48d3d8e684c38649c13bd66a4cf75')
+        token='')
     try:
         longpoll = VkLongPoll(vk_session)
         vk = vk_session.get_api()
