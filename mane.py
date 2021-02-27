@@ -16,11 +16,8 @@ def mane():
     logging.basicConfig(filename='vkbot.log', level=logging.INFO)
     logging.info('Started')
     logging.warning('And this, too')
-    # Вставьте токен своей группы в вк
-    # \/\/\/\/\/\/\/\/\/
     vk_session = vk_api.VkApi(
-        token='')
-    # /\/\/\/\/\/\/\/\/\
+        token='токен')  # < ВСТАВЬТЕ ЗДЕСЬ ТОКЕН ВАШЕЙ ГРУППЫ ВК
     try:
         longpoll = VkLongPoll(vk_session)
         vk = vk_session.get_api()
