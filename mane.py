@@ -15,7 +15,6 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 def mane():
     logging.basicConfig(filename='vkbot.log', level=logging.INFO)
     logging.info('Started')
-    logging.warning('And this, too')
     vk_session = vk_api.VkApi(
         token='токен')  # < ВСТАВЬТЕ ЗДЕСЬ ТОКЕН ВАШЕЙ ГРУППЫ ВК
     try:
