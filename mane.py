@@ -2,36 +2,33 @@
 
 import time
 import vk_api
-import logging
 import requests
-from sys import exit
 from datetime import datetime
-from googletrans import Translator
+from google_trans_new import google_translator
 from vk_api.longpoll import VkLongPoll, VkEventType
 
 # токен вк группы
 
 
 def mane():
-    logging.basicConfig(filename='vkbot.log', level=logging.INFO)
-    logging.info('Started')
+    print('Started')
     vk_session = vk_api.VkApi(
-        token='токен')  # < ВСТАВЬТЕ ЗДЕСЬ ТОКЕН ВАШЕЙ ГРУППЫ ВК
+        token='c2a3d2e18a677d6eaadb42076e50bafb5ea3f2cea42c77347c7b946c48d3d8e684c38649c13bd66a4cf75')
     try:
         longpoll = VkLongPoll(vk_session)
         vk = vk_session.get_api()
-        logging.info('Подключились)')
+        print('Подключились)')
         for event in longpoll.listen():
             if event.from_group:
-                logging.info('******** СООБЩЕНИЕ В ЧАТЕ *******')
-                logging.info(datetime.now())
-                logging.info('Пользователь:', event.user_id, '\nСообщение:', event.text)
-                wether(translator.translate(event.text, dest='en').text, vk, event)
+                print('******** СООБЩЕНИЕ В ЧАТЕ *******')
+                print(datetime.now())
+                print('Пользователь:', event.user_id, '\nСообщение:', event.text)
+                wether(translator.translate(event.text, lang_tgt='en'), vk, event)
             if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
                 event.text = event.text.lower()
-                logging.info('******** НОВОЕ СООБЩЕНИЕ ********')
-                logging.info(datetime.now())
-                logging.info('Пользователь:', event.user_id, '\nСообщение:', event.text)
+                print('******** НОВОЕ СООБЩЕНИЕ ********')
+                print(datetime.now())
+                print('Пользователь:', event.user_id, '\nСообщение:', event.text)
                 if event.text == "1" or event.text == "москва":
                     # city_id = 524901
                     city = 'Moskva'
@@ -101,17 +98,17 @@ def mane():
                     wether(city, vk, event)
 
                 else:
-                    logging.info('******** НОВОЕ СООБЩЕНИЕ ********')
-                    logging.info('Пользователь:', event.user_id, '\nСообщение:', event.text)
-                    wether(translator.translate(event.text, dest='en').text, vk, event)
+                    print('******** НОВОЕ СООБЩЕНИЕ ********')
+                    print('Пользователь:', event.user_id, '\nСообщение:', event.text)
+                    wether(translator.translate(event.text, lang_tgt='en'), vk, event)
 
     except vk_api.exceptions.ApiError:
-        logging.error('Ошибка авторизации: недопустимый токен авторизации\nХотить переподключиться? (да или нет)')
+        print('Ошибка авторизации: недопустимый токен авторизации\nХотить переподключиться? (да или нет)')
         while True:
             if input().lower() == 'да':
                 mane()
             elif input().lower() == 'нет':
-                raise SystemExit
+                break
             else:
                 print('Да или Нет?')
 
@@ -125,6 +122,7 @@ def wether(city, vk, event):
     try:
         res = requests.get('http://api.weatherstack.com/current', params)
         data = res.json()
+        print(data)
         data = data.get('current')
         sunylist = [['Clear'], ['Sunny']]
         rainlist = [["Heavy rain"], ["Rain"], ['Patchy rain possible']]
@@ -151,12 +149,12 @@ def wether(city, vk, event):
             emoji = "🌀"
 
         weather_descriptions = str(", ".join(data.get('weather_descriptions')))
-        weather_descriptions = translator.translate(weather_descriptions, src='en', dest='ru').text
+        weather_descriptions = translator.translate(weather_descriptions, lang_src='en', lang_tgt='ru')
         if weather_descriptions == 'Прозрачный':
             weather_descriptions = 'ясно'
         elif weather_descriptions == 'Дым':
             weather_descriptions = 'дымка'
-        city = translator.translate(city, src='en', dest='ru').text
+        city = translator.translate(city, lang_src='en', lang_tgt='ru')
         city = 'Город: ' + city + ' 🏙\n'
         weather_descriptions = 'Погода: ' + weather_descriptions.lower() + ' ' + emoji + "\n"
         temp = 'Температура: '+str(data.get('temperature'))+"°C 🌡\n"
@@ -199,27 +197,28 @@ def wether(city, vk, event):
         vis = "Видемость: "+str(data.get("visibility"))+"км 🔭\n"
         humidity = "Облачность: "+str(data.get("humidity"))+"% ☁"
 
-        vk.messages.send(user_id=event.user_id,
-                         message=city + weather_descriptions + temp + feelslike + wind + cloud + vis + humidity,
-                         random_id='0')
-        logging.info('Ответ отправлен \n'+city + weather_descriptions +
+        vk.messages.send(
+            user_id=event.user_id,
+            message=city + weather_descriptions + temp + feelslike + wind + cloud + vis + humidity,
+            random_id='0')
+        print('Ответ отправлен \n'+city + weather_descriptions +
                      temp + feelslike + wind + cloud + vis + humidity)
-        logging.info('******** СООБЩЕНИЕ ЗАКРЫТО ********')
+        print('******** СООБЩЕНИЕ ЗАКРЫТО ********')
 
     except AttributeError:
-        logging.error('Город '+event.text+"  не найден(")
+        print('Город '+event.text+"  не найден(")
         if event.from_user:  # Если написали в ЛС
-            vk.messages.send(user_id=event.user_id,
-                             message='Не удалось определить город 😒',
-                             random_id='0')
+            vk.messages.send(
+                user_id=event.user_id,
+                message='Не удалось определить город 😒',
+                random_id='0')
         elif event.from_chat:  # Если написали в Беседе
             vk.messages.send(  # Отправляем собщение
                 chat_id=event.chat_id,
                 message='Не удалось определить город 😒',
                 random_id='0')
 
-
 if __name__ == '__main__':
-    translator = Translator()
-    logging.info('Подключаемся')
+    translator = google_translator()
+    print('Подключаемся')
     mane()
