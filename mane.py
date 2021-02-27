@@ -1,144 +1,126 @@
 # -*- coding: utf-8 -*-
 
 import time
-import requests
 import vk_api
+import logging
+import requests
+from sys import exit
 from datetime import datetime
 from googletrans import Translator
+from vk_api.longpoll import VkLongPoll, VkEventType
 
-vk_session = vk_api.VkApi(token='') #токен вк группы
+# токен вк группы
 
-def mane(vk_session):
-    from vk_api.longpoll import VkLongPoll, VkEventType
-    longpoll = VkLongPoll(vk_session)
-    vk = vk_session.get_api()
-    for event in longpoll.listen():
-        if event.from_group:
-            print('******** НОВОЕ СООБЩЕНИЕ ********')
-            print('Пользователь:', event.user_id, '\nСообщение:', event.text)
-            wether('', translator.translate(event.text, dest='en').text, vk, event)
-        if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-            event.text = event.text.lower()
-            if event.text == "1" or event.text == "москва":
-                s = "0"
-                city_id = 524901
-                city = 'Moskva'
-                print('Запрос id Москвы')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '2' or event.text == "санкт петербург" or event.text == "питер":
-                s = "0"
-                city_id = 498817
-                city = 'Saint Petersburg'
-                print('Запрос id Санкт-Петербурга')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '3' or event.text == "новосибирск":
-                s = "0"
-                city_id = 1496747
-                city = 'Novosibirsk'
-                print('Запрос id Новосибирске')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '4' or event.text == "екатеринбург" or event.text == "екб":
-                s = "0"
-                city_id = 1486209
-                city = 'Ekaterinburg'
-                print('Запрос id Екатеринбурге')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '5' or event.text == "нижней новгород":
-                s = "0"
-                print('id получен')
-                city_id = 520555
-                city = 'Nizhny Novgorod'
-                print('Запрос id Нижнего Новгорода')
-                wether(city_id, city, vk, event)
-            elif event.text == '6' or event.text == "казань":
-                s = "0"
-                city_id = 551487
-                city = 'Kazan'
-                print('Запрос id Казань')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '7' or event.text == "челябинск":
-                s = "0"
-                city_id = 1508291
-                city = 'Chelyabinsk'
-                print('Запрос id Челябинска')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '8' or event.text == "омск":
-                s = "0"
-                city_id = 1496153
-                city = 'Omsk'
-                print('Запрос id Омска')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '9' or event.text == "самара":
-                s = "0"
-                city_id = 499099
-                city = 'Samara'
-                print('Запрос id Самары')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '10' or event.text == "ростов на дону":
-                s = "0"
-                city_id = 501175
-                city = 'Rostov on don'
-                print('Запрос id Ростов-на-Дону')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '11' or event.text == "уфа":
-                s = "0"
-                city_id = 479561
-                city = 'Ufa'
-                print('Запрос id Уфа')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '12' or event.text == "красноярск":
-                s = "0"
-                city_id = 1502026
-                city = 'Krasnoyarsk'
-                print('Запрос id Красноярск')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '13' or event.text == "пермь":
-                s = "0"
-                city_id = 511196
-                city = 'Perm'
-                print('Запрос id Пермь')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '14' or event.text == "воронеж":
-                s = "0"
-                city_id = 472045
-                city = 'Voronezh'
-                print('Запрос id Воронеж')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '15' or event.text == "волгоград":
-                s = "0"
-                city_id = 472757
-                city = 'Volgograd'
-                print('Запрос id Волгоград')
-                print('id получен')
-                wether(city_id, city, vk, event)
-            elif event.text == '16' or event.text == "сызрань":
-                s = "0"
-                city_id = 484972
-                city = 'Syzran'
-                print('Запрос id Сызрань')
-                print('id получен')
-                wether(city_id, city, vk, event)
 
+def mane():
+    logging.basicConfig(filename='vkbot.log', level=logging.INFO)
+    logging.info('Started')
+    logging.warning('And this, too')
+    # Вставьте токен своей группы в вк
+    # \/\/\/\/\/\/\/\/\/
+    vk_session = vk_api.VkApi(
+        token='')
+    # /\/\/\/\/\/\/\/\/\
+    try:
+        longpoll = VkLongPoll(vk_session)
+        vk = vk_session.get_api()
+        logging.info('Подключились)')
+        for event in longpoll.listen():
+            if event.from_group:
+                logging.info('******** СООБЩЕНИЕ В ЧАТЕ *******')
+                logging.info(datetime.now())
+                logging.info('Пользователь:', event.user_id, '\nСообщение:', event.text)
+                wether(translator.translate(event.text, dest='en').text, vk, event)
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                event.text = event.text.lower()
+                logging.info('******** НОВОЕ СООБЩЕНИЕ ********')
+                logging.info(datetime.now())
+                logging.info('Пользователь:', event.user_id, '\nСообщение:', event.text)
+                if event.text == "1" or event.text == "москва":
+                    # city_id = 524901
+                    city = 'Moskva'
+                    wether(city, vk, event)
+                elif event.text == '2' or event.text == "санкт петербург" or event.text == "питер":
+                    # city_id = 498817
+                    city = 'Saint Petersburg'
+                    wether(city, vk, event)
+                elif event.text == '3' or event.text == "новосибирск":
+                    # city_id = 1496747
+                    city = 'Novosibirsk'
+                    wether(city, vk, event)
+                elif event.text == '4' or event.text == "екатеринбург" or event.text == "екб":
+                    # city_id = 1486209
+                    city = 'Ekaterinburg'
+                    wether(city, vk, event)
+                elif event.text == '5' or event.text == "нижней новгород":
+                    # city_id = 520555
+                    city = 'Nizhny Novgorod'
+                    wether(city, vk, event)
+                elif event.text == '6' or event.text == "казань":
+                    # city_id = 551487
+                    city = 'Kazan'
+                    wether(city, vk, event)
+                elif event.text == '7' or event.text == "челябинск":
+                    # city_id = 1508291
+                    city = 'Chelyabinsk'
+                    wether(city, vk, event)
+                elif event.text == '8' or event.text == "омск":
+                    # city_id = 1496153
+                    city = 'Omsk'
+                    wether(city, vk, event)
+                elif event.text == '9' or event.text == "самара":
+                    # city_id = 499099
+                    city = 'Samara'
+                    wether(city, vk, event)
+                elif event.text == '10' or event.text == "ростов на дону":
+                    # city_id = 501175
+                    city = 'Rostov on don'
+                    wether(city, vk, event)
+                elif event.text == '11' or event.text == "уфа":
+                    # city_id = 479561
+                    city = 'Ufa'
+                    wether(city, vk, event)
+                elif event.text == '12' or event.text == "красноярск":
+                    # city_id = 1502026
+                    city = 'Krasnoyarsk'
+                    wether(city, vk, event)
+                elif event.text == '13' or event.text == "пермь":
+                    # city_id = 511196
+                    city = 'Perm'
+                    wether(city, vk, event)
+                elif event.text == '14' or event.text == "воронеж":
+                    # city_id = 472045
+                    city = 'Voronezh'
+                    wether(city, vk, event)
+                elif event.text == '15' or event.text == "волгоград":
+                    # city_id = 472757
+                    city = 'Volgograd'
+                    wether(city, vk, event)
+                elif event.text == '16' or event.text == "сызрань":
+                    # city_id = 484972
+                    city = 'Syzran'
+                    wether(city, vk, event)
+                elif event.text == '16' or event.text == "прага":
+                    city = 'Prague'
+                    wether(city, vk, event)
+
+                else:
+                    logging.info('******** НОВОЕ СООБЩЕНИЕ ********')
+                    logging.info('Пользователь:', event.user_id, '\nСообщение:', event.text)
+                    wether(translator.translate(event.text, dest='en').text, vk, event)
+
+    except vk_api.exceptions.ApiError:
+        logging.error('Ошибка авторизации: недопустимый токен авторизации\nХотить переподключиться? (да или нет)')
+        while True:
+            if input().lower() == 'да':
+                mane()
+            elif input().lower() == 'нет':
+                raise SystemExit
             else:
-                print('******** НОВОЕ СООБЩЕНИЕ ********')
-                print('Пользователь:',event.user_id,'\nСообщение:', event.text)
-                wether('',translator.translate(event.text, dest='en').text,vk, event)
+                print('Да или Нет?')
 
 
-def wether(city_id, city, vk, event):
+def wether(city, vk, event):
     access_key = "3c32677556a6389d7599087ae1cac74a"
     params = {
         'access_key': access_key,
@@ -147,63 +129,89 @@ def wether(city_id, city, vk, event):
     try:
         res = requests.get('http://api.weatherstack.com/current', params)
         data = res.json()
-        print(data)
-        data= data.get('current')
-        print(data.get('weather_descriptions'))
-        if data.get('weather_descriptions') == ['Clear']: # солнечно
-            emoji = "&#9728;"
-        elif data.get('weather_descriptions') == ["rain"] or data.get('weather_descriptions') == ["heavy rain"]: # дождик
-            emoji = "&#127783;"
-        elif data.get('weather_descriptions') == ['Smoke']: # дымка
-            emoji = "&#127787;"
-        elif data.get('weather_descriptions') == ['Overcast'] or data.get('weather_descriptions') == ['Partly cloudy']: # облачно
-            emoji = "&#9925;"
-        elif data.get('weather_descriptions') == ['Light Snow'] or data.get('weather_descriptions') == ['Light Snow Shower'] or data.get('weather_descriptions') == ['Heavy Snow Shower']: # слабый снегопад
-            emoji = "&#127784;"
-        elif data.get('weather_descriptions') == ['Heavy Snow, Blowing Snow'] or data.get('weather_descriptions') == ['Blowing Snow'] or data.get('weather_descriptions') == ['Heavy snow']: # сильный снегопад метель
-            emoji = "	&#127788;"
-        elif data.get('weather_descriptions') == "thunderstorm": # гроза
-            emoji = "&#9928;"
-        elif data.get('weather_descriptions') == "thunderstorm": # гроза
-            emoji = "&#9928;"
+        data = data.get('current')
+        sunylist = [['Clear'], ['Sunny']]
+        rainlist = [["Heavy rain"], ["Rain"], ['Patchy rain possible']]
+        smokelist = [['Smoke']]
+        overcastlist = [['Partly cloudy'], ['Overcast'], ['Cloudy']]
+        lightsnowlist = [['Light Rain And Snow'], ['Light Snow'], ['Light Snow Shower'], ['Snow']]
+        hardsnowlist = [['Heavy Snow Shower'], ['Heavy Snow, Blowing Snow'], ['Blowing Snow'], ['Heavy snow']]
+        thunderstormlist = [['Thunderstorm'], ['Storm'], ['Hurricane'], ['Tempest']]
+        if sunylist.count(data.get('weather_descriptions')) != 0:  # солнечно
+            emoji = "☀"
+        elif rainlist.count(data.get('weather_descriptions')) != 0:    # дождик
+            emoji = "🌧"
+        elif smokelist.count(data.get('weather_descriptions')) != 0:    # дымка
+            emoji = "🌫"
+        elif overcastlist.count(data.get('weather_descriptions')) != 0:   # облачно
+            emoji = "⛅"
+        elif lightsnowlist.count(data.get('weather_descriptions')) != 0:  # слабый снегопад
+            emoji = "🌨"
+        elif hardsnowlist.count(data.get('weather_descriptions')) != 0:   # сильный снегопад метель
+            emoji = "🌬"
+        elif thunderstormlist.count(data.get('weather_descriptions')) != 0:    # гроза
+            emoji = "⛈"
         else:
-            emoji = "&#127744;"
+            emoji = "🌀"
 
         weather_descriptions = str(", ".join(data.get('weather_descriptions')))
         weather_descriptions = translator.translate(weather_descriptions, src='en', dest='ru').text
-        if weather_descriptions == 'Прозрачный': weather_descriptions = 'ясно'
-        elif weather_descriptions == 'Дым': weather_descriptions='дымка'
+        if weather_descriptions == 'Прозрачный':
+            weather_descriptions = 'ясно'
+        elif weather_descriptions == 'Дым':
+            weather_descriptions = 'дымка'
         city = translator.translate(city, src='en', dest='ru').text
         city = 'Город: ' + city + ' 🏙\n'
         weather_descriptions = 'Погода: ' + weather_descriptions.lower() + ' ' + emoji + "\n"
-        temperatur = 'Температура: '+str(data.get('temperature'))+"°C 	&#127777;\n"
-        feelslike = "По ощущению: "+str(data.get('feelslike'))+"°C 	&#127777;\n"
-        if data.get('wind_dir')=='N': wind_dir = 'северный'
-        elif data.get('wind_dir')=='S': wind_dir = 'южный'
-        elif data.get('wind_dir')=='E': wind_dir = 'восточный'
-        elif data.get('wind_dir')=='W': wind_dir = 'западный'
-        elif data.get('wind_dir')=='NE': wind_dir = 'северо-восточный'
-        elif data.get('wind_dir') == 'NNE': wind_dir = 'северо-северо-восточный'
-        elif data.get('wind_dir') == 'NW': wind_dir = 'северо-западный'
-        elif data.get('wind_dir') == 'NNW': wind_dir = 'северо-северо-западный'
-        elif data.get('wind_dir') == 'SE': wind_dir = 'юго-восточный'
-        elif data.get('wind_dir') == 'SSE': wind_dir = 'юго-юго-восточный'
-        elif data.get('wind_dir') == 'SW': wind_dir = 'юго-западный'
-        elif data.get('wind_dir') == 'SSW': wind_dir = 'юго-юго-западный'
-        elif data.get('wind_dir') == 'WNW': wind_dir = 'западный-северо-западный'
-        elif data.get('wind_dir') == 'ENE': wind_dir = 'восточный-северо-восточный'
-        elif data.get('wind_dir') == 'WSW': wind_dir = 'западный-юго-западный'
-        elif data.get('wind_dir') == 'ESE': wind_dir = 'юго-юго-западный'
-        wind_speed = "Ветер: "+ wind_dir + ', ' + str(round(data.get('wind_speed')/3.6,2))+ " м/с 💨\n"
-        cloudcover = "Влажность: "+str(data.get('humidity'))+"% 	&#128167;\n"
-        visibility = "Видемость: "+str(data.get("visibility"))+"км 🔭\n"
-        humidity = "Облачность: "+str(data.get("humidity"))+"% ☁\n"
+        temp = 'Температура: '+str(data.get('temperature'))+"°C 🌡\n"
+        feelslike = "По ощущению: "+str(data.get('feelslike'))+"°C 🌡\n"
+        wind_dir = ''
+        if data.get('wind_dir') == 'N':
+            wind_dir = 'северный'
+        elif data.get('wind_dir') == 'S':
+            wind_dir = 'южный'
+        elif data.get('wind_dir') == 'E':
+            wind_dir = 'восточный'
+        elif data.get('wind_dir') == 'W':
+            wind_dir = 'западный'
+        elif data.get('wind_dir') == 'NE':
+            wind_dir = 'северо-восточный'
+        elif data.get('wind_dir') == 'NNE':
+            wind_dir = 'северо-северо-восточный'
+        elif data.get('wind_dir') == 'NW':
+            wind_dir = 'северо-западный'
+        elif data.get('wind_dir') == 'NNW':
+            wind_dir = 'северо-северо-западный'
+        elif data.get('wind_dir') == 'SE':
+            wind_dir = 'юго-восточный'
+        elif data.get('wind_dir') == 'SSE':
+            wind_dir = 'юго-юго-восточный'
+        elif data.get('wind_dir') == 'SW':
+            wind_dir = 'юго-западный'
+        elif data.get('wind_dir') == 'SSW':
+            wind_dir = 'юго-юго-западный'
+        elif data.get('wind_dir') == 'WNW':
+            wind_dir = 'западный-северо-западный'
+        elif data.get('wind_dir') == 'ENE':
+            wind_dir = 'восточный-северо-восточный'
+        elif data.get('wind_dir') == 'WSW':
+            wind_dir = 'западный-юго-западный'
+        elif data.get('wind_dir') == 'ESE':
+            wind_dir = 'юго-юго-западный'
+        wind = "Ветер: " + wind_dir + ', ' + str(round(data.get('wind_speed')/3.6, 2)) + " м/с 💨\n"
+        cloud = "Влажность: "+str(data.get('humidity'))+"% 💧\n"
+        vis = "Видемость: "+str(data.get("visibility"))+"км 🔭\n"
+        humidity = "Облачность: "+str(data.get("humidity"))+"% ☁"
 
-        print(weather_descriptions)
         vk.messages.send(user_id=event.user_id,
-                         message=city + weather_descriptions + temperatur + feelslike + wind_speed + cloudcover + visibility + humidity,
+                         message=city + weather_descriptions + temp + feelslike + wind + cloud + vis + humidity,
                          random_id='0')
-    except:
+        logging.info('Ответ отправлен \n'+city + weather_descriptions +
+                     temp + feelslike + wind + cloud + vis + humidity)
+        logging.info('******** СООБЩЕНИЕ ЗАКРЫТО ********')
+
+    except AttributeError:
+        logging.error('Город '+event.text+"  не найден(")
         if event.from_user:  # Если написали в ЛС
             vk.messages.send(user_id=event.user_id,
                              message='Не удалось определить город 😒',
@@ -214,5 +222,8 @@ def wether(city_id, city, vk, event):
                 message='Не удалось определить город 😒',
                 random_id='0')
 
-translator = Translator()
-mane(vk_session)
+
+if __name__ == '__main__':
+    translator = Translator()
+    logging.info('Подключаемся')
+    mane()
