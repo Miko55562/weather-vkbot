@@ -11,10 +11,10 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 
 
 def mane():
-    print('Started')
-    vk_session = vk_api.VkApi(
-        token='')
     try:
+        print('Started')
+        vk_session = vk_api.VkApi(
+        token='')
         longpoll = VkLongPoll(vk_session)
         vk = vk_session.get_api()
         print('Подключились)')
@@ -101,7 +101,10 @@ def mane():
                     print('******** НОВОЕ СООБЩЕНИЕ ********')
                     print('Пользователь:', event.user_id, '\nСообщение:', event.text)
                     wether(translator.translate(event.text, lang_tgt='en'), vk, event)
-
+    except requests.exception.ReadTimeout:
+        print("\n Переподключение к серверам ВК \n")
+        time.sleep(3)
+        
     except vk_api.exceptions.ApiError:
         print('Ошибка авторизации: недопустимый токен авторизации\nХотить переподключиться? (да или нет)')
         while True:
