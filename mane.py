@@ -117,7 +117,7 @@ def mane():
 
 
 def wether(city, vk, event):
-    access_key = "3c32677556a6389d7599087ae1cac74a"
+    access_key = ""
     params = {
         'access_key': access_key,
         'query': city
