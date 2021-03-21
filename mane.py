@@ -96,15 +96,9 @@ def wether(city, vk, event):
             emoji = "⛈"
             weather_descriptions = 'гроза'
         else:
-            print(data.get('weather_descriptions'))
             emoji = "🌀"
             weather_descriptions = str(", ".join(data.get('weather_descriptions')))
             weather_descriptions = translator.translate(weather_descriptions, lang_tgt='ru')
-        sendmessage(adminid, vk, weather_descriptions)
-        if weather_descriptions == 'Прозрачный':
-            weather_descriptions = 'ясно'
-        elif weather_descriptions == 'Дым':
-            weather_descriptions = 'дымка'
         city = 'Город: ' + str(city[0].upper())+city[1:] + ' 🏙\n'
         weather_descriptions = 'Погода: ' + weather_descriptions.lower() + ' ' + emoji + "\n"
         temp = 'Температура: '+str(data.get('temperature'))+"°C 🌡\n"
